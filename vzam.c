@@ -1,5 +1,5 @@
 /*
- * vzam - Composite Overlay Window (COW) Compositor for vxwm
+ * 
  * Requires linking: -lX11 -lXcomposite -lXdamage -lXrender -lXfixes -lXext -lm
  */
 
