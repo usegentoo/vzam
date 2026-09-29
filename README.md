@@ -1,18 +1,3 @@
-Here is the final, clean `README.md` file ready to be added to your repository:
-
-```markdown
-<h1 align="center">vzam</h1>
-
-<p align="center">
-  <b>A lightning-fast, lightweight utility targeted for users of the vxwm window manager.</b>
-</p>
-
-<p align="center">
-  <a href="#features"><img src="https://img.shields.io/badge/status-active-success.svg" alt="Status"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
-  <a href="#"><img src="https://img.shields.io/badge/platform-Linux-informational?logo=linux" alt="Platform"></a>
-</p>
-
 ---
 
 ## About
@@ -65,7 +50,7 @@ Clone the repository, compile the source, and install it to your system:
 
 ```bash
 # Clone the repository
-git clone [https://github.com/YOUR_USERNAME/vzam.git](https://github.com/YOUR_USERNAME/vzam.git)
+git clone https://github.com/YOUR_USERNAME/vzam.git
 cd vzam
 
 # Compile from source
@@ -102,7 +87,3 @@ Contributions, bug reports, and feature requests are always welcome. Feel free t
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more details.
-
-```
-
-```
