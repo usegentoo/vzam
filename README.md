@@ -1,0 +1,53 @@
+<h1 align="center">vzam</h1>
+
+<p align="center">
+  <b>A lightning-fast, lightweight utility targeted for users of the vxwm window manager.</b>
+</p>
+
+<p align="center">
+  <a href="#features"><img src="https://img.shields.io/badge/status-active-success.svg" alt="Status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+  <a href="#"><img src="https://img.shields.io/badge/platform-Linux-informational?logo=linux" alt="Platform"></a>
+</p>
+
+---
+
+## About
+
+**vzam** is built for minimalism and speed. Designed with a zero-bloat philosophy, it provides a clean, highly customizable experience specifically targeted for users running the **vxwm** window manager and efficient keyboard-driven Linux workflows.
+
+---
+
+## Features
+
+* **vxwm Synergy:** Tailored functionality designed to complement the vxwm environment.
+* **Lightweight & Fast:** Minimal resource overhead and instant responsiveness.
+* **Source-Configurable:** Easily customize behavior, keybindings, and aesthetics via `config.h`.
+* **Dependency-Lite:** Built using standard system libraries without heavy desktop environment requirements.
+* **Keyboard-First:** Optimized for smooth, seamless navigation.
+
+---
+
+## Dependencies
+
+Make sure you have the necessary development tools and libraries installed on your system:
+
+* A standard C compiler (`gcc` or `clang`)
+* `make`
+* `libX11` (or your target display libraries)
+
+### Quick Install for Dependencies
+
+```bash
+# Arch Linux
+sudo pacman -S base-devel libx11
+
+# Debian / Ubuntu
+sudo apt update
+sudo apt install build-essential libx11-dev
+
+# Gentoo
+sudo emerge --ask x11-libs/libX11 sys-devel/make sys-devel/gcc
+
+# Nix / NixOS (Temporary shell with dependencies)
+nix-shell -p gnumake gcc xorg.libX11
