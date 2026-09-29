@@ -1,5 +1,3 @@
----
-
 ## About
 
 **vzam** is built for minimalism and speed. Designed with a zero-bloat philosophy, it provides a clean, highly customizable experience specifically targeted for users running the **vxwm** window manager and efficient keyboard-driven Linux workflows.
