@@ -1,3 +1,6 @@
+Here is the final, clean `README.md` file ready to be added to your repository:
+
+```markdown
 <h1 align="center">vzam</h1>
 
 <p align="center">
@@ -51,3 +54,55 @@ sudo emerge --ask x11-libs/libX11 sys-devel/make sys-devel/gcc
 
 # Nix / NixOS (Temporary shell with dependencies)
 nix-shell -p gnumake gcc xorg.libX11
+
+```
+
+---
+
+## Installation
+
+Clone the repository, compile the source, and install it to your system:
+
+```bash
+# Clone the repository
+git clone [https://github.com/YOUR_USERNAME/vzam.git](https://github.com/YOUR_USERNAME/vzam.git)
+cd vzam
+
+# Compile from source
+make
+
+# Install 
+sudo make install
+
+```
+
+---
+
+## Configuration
+
+`vzam` is configured directly through its source files for ultimate performance:
+
+1. Open `config.h` in your text editor.
+2. Modify keybindings, colors, or options to fit your setup.
+3. Recompile and reinstall your changes:
+
+```bash
+sudo make clean install
+
+```
+
+---
+
+## Contributing
+
+Contributions, bug reports, and feature requests are always welcome. Feel free to open an issue or submit a pull request.
+
+---
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more details.
+
+```
+
+```
