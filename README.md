@@ -55,16 +55,19 @@ sudo emerge --ask x11-libs/libX11 sys-devel/make sys-devel/gcc
 
 # Nix / NixOS (Temporary shell with dependencies)
 nix-shell -p gnumake gcc xorg.libX11
-
-Installation
+```
+---
+## Installation
 
 Clone the repository, compile the source, and install it to your system:
 
 
 # Clone the repository
+```
 git clone [https://github.com/usegentoo/vzam.git](https://github.com/usegentoo/vzam.git)
 cd vzam
-
+```
+---
 # Compile from source
 make
 
