@@ -85,6 +85,7 @@ Bash
 
 sudo make clean install
 
+```
 Contributing
 
 Contributions, bug reports, and feature requests are always welcome. Feel free to open an issue or submit a pull request.
