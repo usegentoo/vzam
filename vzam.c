@@ -1,5 +1,5 @@
 /*
- * 
+ * vzam - Composite Overlay Window (COW) Compositor for vxwm
  * Requires linking: -lX11 -lXcomposite -lXdamage -lXrender -lXfixes -lXext -lm
  */
 
@@ -30,6 +30,7 @@ typedef struct WindowNode {
     float opacity, target_opacity;
     int is_dock;
     int alive;
+    int is_snapshot;
     struct WindowNode *next;
 } WindowNode;
 
@@ -247,7 +248,7 @@ static void init_backbuffer() {
 }
 
 static void update_window_pixmap(WindowNode *w) {
-    if (!w) return;
+    if (!w || w->is_snapshot) return;
 
     XErrorHandler old_handler = XSetErrorHandler(safe_error_handler);
     w->is_dock = is_dock_window(w->id);
@@ -309,11 +310,36 @@ static void start_window_close(WindowNode *w) {
     if (!w || !w->alive) return;
     w->alive = 0;
     w->target_opacity = 0.0f;
+
+    // Snapshot window contents into an independent pixmap so we can animate after X destroys/unmaps the original window
+    if (w->picture != None && w->target_w > 0 && w->target_h > 0 && !w->is_snapshot) {
+        XErrorHandler old_handler = XSetErrorHandler(safe_error_handler);
+        int sw = (int)w->target_w;
+        int sh = (int)w->target_h;
+
+        Pixmap snap_pm = XCreatePixmap(dpy, root, sw, sh, 32);
+        XRenderPictFormat *fmt = XRenderFindStandardFormat(dpy, PictStandardARGB32);
+        Picture snap_pic = XRenderCreatePicture(dpy, snap_pm, fmt, 0, NULL);
+
+        if (snap_pic != None) {
+            XRenderComposite(dpy, PictOpSrc, w->picture, None, snap_pic, 0, 0, 0, 0, 0, 0, sw, sh);
+            
+            XRenderFreePicture(dpy, w->picture);
+            if (w->pixmap != None) XFreePixmap(dpy, w->pixmap);
+
+            w->pixmap = snap_pm;
+            w->picture = snap_pic;
+            w->is_snapshot = 1;
+        }
+        XSync(dpy, False);
+        XSetErrorHandler(old_handler);
+    }
+
     if (!w->is_dock) {
         float old_w = w->target_w;
         float old_h = w->target_h;
-        w->target_w *= 0.85f;
-        w->target_h *= 0.85f;
+        w->target_w *= 0.80f;
+        w->target_h *= 0.80f;
         w->target_x += (old_w - w->target_w) * 0.5f;
         w->target_y += (old_h - w->target_h) * 0.5f;
     }
@@ -328,9 +354,14 @@ static WindowNode *add_or_update_window(Window win) {
 
     WindowNode *w = find_window(win);
     if (w) {
-        w->alive = 1;
-        w->target_opacity = 1.0f;
-        update_window_pixmap(w);
+        if (!w->alive) {
+            w->alive = 1;
+            w->is_snapshot = 0;
+            w->target_opacity = 1.0f;
+            update_window_pixmap(w);
+        } else if (!w->is_snapshot) {
+            update_window_pixmap(w);
+        }
         return w;
     }
 
@@ -342,6 +373,7 @@ static WindowNode *add_or_update_window(Window win) {
     node->alive = 1;
     node->opacity = 0.0f;
     node->target_opacity = 1.0f;
+    node->is_snapshot = 0;
 
     update_window_pixmap(node);
 
@@ -384,7 +416,7 @@ static void sort_windows_by_z_order() {
     for (unsigned int i = 0; i < nchildren; i++) {
         WindowNode **curr = &window_list;
         while (*curr) {
-            if ((*curr)->id == children[i]) {
+            if ((*curr)->id == children[i] || ((*curr)->is_snapshot && !(*curr)->alive)) {
                 WindowNode *match = *curr;
                 *curr = match->next;
                 match->next = NULL;
@@ -402,17 +434,20 @@ static void sort_windows_by_z_order() {
         }
     }
 
-    WindowNode *stray = window_list;
-    while (stray) {
-        WindowNode *next = stray->next;
-        XErrorHandler old_handler = XSetErrorHandler(safe_error_handler);
-        if (stray->damage != None) XDamageDestroy(dpy, stray->damage);
-        if (stray->picture != None) XRenderFreePicture(dpy, stray->picture);
-        if (stray->pixmap != None) XFreePixmap(dpy, stray->pixmap);
-        XSync(dpy, False);
-        XSetErrorHandler(old_handler);
-        free(stray);
-        stray = next;
+    // Keep active closing snapshots attached
+    WindowNode **curr = &window_list;
+    while (*curr) {
+        WindowNode *match = *curr;
+        *curr = match->next;
+        match->next = NULL;
+
+        if (!sorted_head) {
+            sorted_head = match;
+            sorted_tail = match;
+        } else {
+            sorted_tail->next = match;
+            sorted_tail = match;
+        }
     }
 
     window_list = sorted_head;
@@ -482,7 +517,7 @@ static void render_frame() {
             w->width = w->target_w;
             w->height = w->target_h;
         } else {
-            // Smoothly interpolate position and size (handles both open scale-up and close shrink-down)
+            // Smoothly interpolate position and size
             w->x += (w->target_x - w->x) * anim_step;
             w->y += (w->target_y - w->y) * anim_step;
             w->width += (w->target_w - w->width) * anim_step;
@@ -665,7 +700,7 @@ int main() {
                     desktop_switch_lock = 60;
                 } else {
                     WindowNode *w = find_window(ev.xproperty.window);
-                    if (w) {
+                    if (w && !w->is_snapshot) {
                         w->is_dock = is_dock_window(w->id);
                     }
                 }
@@ -686,9 +721,9 @@ int main() {
                 }
             } else if (ev.type == ConfigureNotify) {
                 WindowNode *w = find_window(ev.xconfigure.window);
-                if (w) {
+                if (w && !w->is_snapshot) {
                     update_window_pixmap(w);
-                } else {
+                } else if (!w) {
                     add_or_update_window(ev.xconfigure.window);
                 }
             } else if (ev.type == ReparentNotify) {
