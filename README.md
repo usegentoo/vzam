@@ -1,3 +1,21 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/usegentoo/vzam/main/preview.png" alt="vzam preview" width="700">
+</p>
+
+<h1 align="center">vzam</h1>
+
+<p align="center">
+  <b>A lightning-fast, lightweight utility targeted for users of the vxwm window manager.</b>
+</p>
+
+<p align="center">
+  <a href="#features"><img src="https://img.shields.io/badge/status-active-success.svg" alt="Status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+  <a href="#"><img src="https://img.shields.io/badge/platform-Linux-informational?logo=linux" alt="Platform"></a>
+</p>
+
+---
+
 ## About
 
 **vzam** is built for minimalism and speed. Designed with a zero-bloat philosophy, it provides a clean, highly customizable experience specifically targeted for users running the **vxwm** window manager and efficient keyboard-driven Linux workflows.
@@ -38,17 +56,13 @@ sudo emerge --ask x11-libs/libX11 sys-devel/make sys-devel/gcc
 # Nix / NixOS (Temporary shell with dependencies)
 nix-shell -p gnumake gcc xorg.libX11
 
-```
-
----
-
-## Installation
+Installation
 
 Clone the repository, compile the source, and install it to your system:
+Bash
 
-```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/vzam.git
+git clone [https://github.com/usegentoo/vzam.git](https://github.com/usegentoo/vzam.git)
 cd vzam
 
 # Compile from source
@@ -57,31 +71,23 @@ make
 # Install 
 sudo make install
 
-```
+Configuration
 
----
+vzam is configured directly through its source files for ultimate performance:
 
-## Configuration
+    Open config.h in your text editor.
 
-`vzam` is configured directly through its source files for ultimate performance:
+    Modify keybindings, colors, or options to fit your setup.
 
-1. Open `config.h` in your text editor.
-2. Modify keybindings, colors, or options to fit your setup.
-3. Recompile and reinstall your changes:
+    Recompile and reinstall your changes:
 
-```bash
+Bash
+
 sudo make clean install
 
-```
-
----
-
-## Contributing
+Contributing
 
 Contributions, bug reports, and feature requests are always welcome. Feel free to open an issue or submit a pull request.
+License
 
----
-
-## License
-
-Distributed under the MIT License. See `LICENSE` for more details.
+Distributed under the MIT License. See LICENSE for more details.
