@@ -751,8 +751,3 @@ int main() {
     XCloseDisplay(dpy);
     return 0;
 }
-// wen-sync test
-// test commit
-// final test
-// final test
-// testing daemon
