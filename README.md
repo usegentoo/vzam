@@ -88,7 +88,6 @@ vzam is configured directly through its source files for ultimate performance:
     Recompile and reinstall your changes:
 
 ```
-
 sudo make clean install
 ```
 
