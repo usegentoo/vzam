@@ -69,8 +69,9 @@ cd vzam
 ```
 ---
 # Compile from source
+```
 make
-
+```
 # Install 
 sudo make install
 ```
