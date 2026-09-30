@@ -42,7 +42,7 @@ Make sure you have the necessary development tools and libraries installed on yo
 
 ### Quick Install for Dependencies
 
-```bash
+```
 # Arch Linux
 sudo pacman -S base-devel libx11
 
@@ -59,7 +59,7 @@ nix-shell -p gnumake gcc xorg.libX11
 Installation
 
 Clone the repository, compile the source, and install it to your system:
-Bash
+
 
 # Clone the repository
 git clone [https://github.com/usegentoo/vzam.git](https://github.com/usegentoo/vzam.git)
@@ -70,8 +70,9 @@ make
 
 # Install 
 sudo make install
-
-Configuration
+```
+---
+##Configuration
 
 vzam is configured directly through its source files for ultimate performance:
 
@@ -81,7 +82,7 @@ vzam is configured directly through its source files for ultimate performance:
 
     Recompile and reinstall your changes:
 
-Bash
+```
 
 sudo make clean install
 
