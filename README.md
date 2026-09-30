@@ -72,7 +72,7 @@ make
 sudo make install
 ```
 ---
-##Configuration
+## Configuration
 
 vzam is configured directly through its source files for ultimate performance:
 
