@@ -74,7 +74,7 @@ make
 ```
 # Install 
 sudo make install
-```
+
 ---
 ## Configuration
 
@@ -89,8 +89,8 @@ vzam is configured directly through its source files for ultimate performance:
 ```
 
 sudo make clean install
-
 ```
+
 ---
 
 ## Contributing
