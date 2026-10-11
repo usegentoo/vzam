@@ -17,6 +17,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <math.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include "config.h"
 
@@ -56,6 +58,25 @@ static float target_viewport_y = 0.0f;
 static int desktop_switch_lock = 0;
 
 static Atom net_current_desktop_atom;
+
+// Spawn wpick asynchronously in the background
+static void spawn_wpick(const char *arg) {
+    pid_t pid = fork();
+    if (pid < 0) {
+        perror("vzam: fork failed for wpick");
+        return;
+    }
+    if (pid == 0) {
+        setsid();
+        if (arg) {
+            execlp("wpick", "wpick", arg, NULL);
+        } else {
+            execlp("wpick", "wpick", NULL);
+        }
+        perror("vzam: execlp wpick failed");
+        _exit(1);
+    }
+}
 
 static int safe_error_handler(Display *d, XErrorEvent *e) {
     (void)d;
@@ -461,6 +482,10 @@ static void grab_keys() {
     XGrabKey(dpy, XKeysymToKeycode(dpy, XK_0), Mod4Mask, root, True, GrabModeAsync, GrabModeAsync);
     XGrabKey(dpy, XKeysymToKeycode(dpy, XK_r), Mod1Mask, root, True, GrabModeAsync, GrabModeAsync);
 
+    // Keybind: Super + W to trigger wpick
+    XGrabKey(dpy, XKeysymToKeycode(dpy, XK_w), Mod4Mask, root, True, GrabModeAsync, GrabModeAsync);
+    XGrabKey(dpy, XKeysymToKeycode(dpy, XK_W), Mod4Mask, root, True, GrabModeAsync, GrabModeAsync);
+
     XGrabButton(dpy, Button4, Mod4Mask, root, False, ButtonPressMask, GrabModeAsync, GrabModeAsync, None, None);
     XGrabButton(dpy, Button5, Mod4Mask, root, False, ButtonPressMask, GrabModeAsync, GrabModeAsync, None, None);
 }
@@ -535,7 +560,13 @@ static void render_frame() {
             Picture root_pic = XRenderCreatePicture(dpy, root_pm, format, 0, NULL);
             if (root_pic != None) {
                 XRenderComposite(dpy, PictOpSrc, root_pic, None, backbuffer_picture,
-                                 0, 0, 0, 0, (int)-current_viewport_x, (int)-current_viewport_y, screen_w * 5, screen_h);
+                // Tiled/repeated root background rendering across all virtual workspaces
+                XRenderPictureAttributes pa;
+                pa.repeat = RepeatNormal;
+                XRenderChangePictureAttributes(dpy, root_pic, CPRepeat, &pa);
+
+                XRenderComposite(dpy, PictOpSrc, root_pic, None, backbuffer_picture,
+                                 0, 0, 0, 0, 0, 0, screen_w, screen_h);
                 XRenderFreePicture(dpy, root_pic);
             }
         }
@@ -553,8 +584,9 @@ static void render_frame() {
     WindowNode *w = window_list;
     while (w) {
         if (w->picture != None && w->opacity > 0.01f) {
-            float render_x = w->x - current_viewport_x;
-            float render_y = w->y - current_viewport_y;
+            // Render viewport offset depending on whether the window is a dock or standard window
+            float render_x = w->is_dock ? w->x : (w->x - current_viewport_x);
+            float render_y = w->is_dock ? w->y : (w->y - current_viewport_y);
             Picture alpha_mask = (w->opacity < 0.999f) ? get_alpha_picture(w->opacity) : None;
 
             if (w->is_dock) {
@@ -694,6 +726,8 @@ int main() {
                 } else if (keysym == XK_0 || keysym == XK_r || keysym == XK_R) {
                     target_zoom = 1.0f;
                 }
+                } else if (keysym == XK_w || keysym == XK_W) {
+                    spawn_wpick(NULL);
             } else if (ev.type == PropertyNotify) {
                 if (ev.xproperty.atom == net_current_desktop_atom) {
                     update_desktop_viewport();
