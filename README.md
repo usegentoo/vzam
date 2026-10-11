@@ -44,17 +44,16 @@ Make sure you have the necessary development tools and libraries installed on yo
 
 ```
 # Arch Linux
-sudo pacman -S base-devel libx11
+sudo pacman -S base-devel libx11 libxcomposite libxdamage libxrender libxfixes libxext
 
 # Debian / Ubuntu
-sudo apt update
-sudo apt install build-essential libx11-dev
+sudo apt update && sudo apt install build-essential libx11-dev libxcomposite-dev libxdamage-dev libxrender-dev libxfixes-dev libxext-dev
 
 # Gentoo
-sudo emerge --ask x11-libs/libX11 sys-devel/make sys-devel/gcc
+sudo emerge --ask x11-libs/libX11 x11-libs/libXcomposite x11-libs/libXdamage x11-libs/libXrender x11-libs/libXfixes x11-libs/libXext sys-devel/make sys-devel/gcc
 
 # Nix / NixOS (Temporary shell with dependencies)
-nix-shell -p gnumake gcc xorg.libX11
+nix-shell -p gnumake gcc xorg.libX11 xorg.libXcomposite xorg.libXdamage xorg.libXrender xorg.libXfixes xorg.libXext
 ```
 ---
 ## Installation
